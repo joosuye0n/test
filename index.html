@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VR world</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background-color: #000;
+      font-family: sans-serif;
+      color: white;
+    }
+
+
+
+    .page-content {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      display: block;
+    }
+
+      /* ===== 푸터 ===== */
+      .footer {
+
+    position: relative;
+    z-index: 2;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    width: 100%;
+    padding:20px 0;
+    
+    }
+
+    .footer-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    }
+
+    /* 왼쪽 텍스트 */
+    .footer-left h4 {
+    margin: 0;
+    font-size: 18px;
+    }
+
+    .footer-left p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    }
+
+    /* 입력폼 */
+    .footer-form {
+    display: flex;
+    gap: 10px;
+    }
+
+    .footer-form input {
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: rgb(255, 255, 255);
+    font-size: 13px;
+    outline: none;
+    width: 120px;
+    }
+
+    .footer-form input::placeholder {
+    color: rgba(255,255,255,0.6);
+    }
+
+    .footer-form button {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: none;
+    background: white;
+    color: #111;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    }
+
+    /* ===== 네비게이션 ===== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(10px);
+      color: #ffffff;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .navbar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      color: white;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .nav-menu a {
+      color: white;
+      text-decoration: none;
+      font-size: 15px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      transition: 0.2s;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .nav-menu a:hover {
+      background: rgba(255,255,255,0.18);
+    }
+
+    /* ===== 로딩 텍스트 ===== */
+    #loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffffff;
+      font-size: 16px;
+      pointer-events: none;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+    }
+
+    /* ===== 히어로 ===== */
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 70px 20px 30px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: 42px;
+    }
+
+    .hero p {
+      margin: 0 auto;
+      max-width: 720px;
+      font-size: 17px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ===== 본문 3열 레이아웃 ===== */
+    .content-section {
+      max-width: 1200px;
+      margin: 300px 10px;
+      padding: 30px 20px 80px;
+    }
+
+    .product-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+
+  max-width: 1100px;
+  margin: 0 auto;  
+
+  position: static;
+  transform: none;
+  z-index: 30;
+
+    }
+
+    .product-card {
+      width: 100%;
+      min-height: 220px;
+      text-align: center;
+      color: white;
+      padding: 28px 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .product-card h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+    }
+
+    .product-card p {
+      margin: 0 0 18px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.85);
+      font-weight: normal;
+    }
+
+    .product-card button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #111;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .product-card button:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 900px) {
+  .product-links {
+    grid-template-columns: 1fr;
+  }
+}
+
+    /* ===== 문의 입력 영역 ===== */
+    .inquiry-section {
+      max-width: 1000px;
+      margin: 0 auto 100px;
+      padding: 0 20px;
+      
+    }
+
+    .inquiry-box {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .inquiry-box h3 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+
+    .inquiry-box p {
+      margin: 0 0 22px;
+      color: rgba(255,255,255,0.82);
+    }
+
+    .inquiry-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .inquiry-form input,
+    .inquiry-form textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.12);
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .inquiry-form input::placeholder,
+    .inquiry-form textarea::placeholder {
+      color: rgba(255,255,255,0.65);
+    }
+
+    .inquiry-form textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    .inquiry-form button {
+      justify-self: start;
+      padding: 12px 22px;
+      border: none;
+      border-radius: 999px;
+      background: white;
+      color: #111;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ===== 반응형 ===== */
+    @media (max-width: 900px) {
+      .product-links {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .navbar-container {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-menu {
+        width: 100%;
+      }
+
+      .hero {
+        padding-top: 50px;
+      }
+
+      .hero h1 {
+        font-size: 28px;
+      }
+
+    
+
+    /*border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 20px 0;
+    margin-top: 40px;*/
+    
+    }
+
+    
+    
+  </style>
+</head>
+<body>
+  <div class="page-content">
+    <nav class="navbar">
+      <div class="navbar-container">
+        <div class="logo">VR world</div>
+
+        <div class="nav-menu">
+          <a href="#home">Home</a>
+          <a href="#worlds">Worlds</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="loading">Loading Model...</div>
+
+    <section class="hero" id="home">
+    </section>
+
+    <section class="content-section" id="worlds">
+      <div class="product-links">
+        <div class="product-card" id="card1">
+          <h2>동숲</h2>
+          <p>아기자기하고 편안한 감성의 힐링형 월드</p>
+          <button onclick="location.href='product1.html'">바로가기</button>
+        </div>
+
+        <div class="product-card" id="card2">
+          <h2>자연</h2>
+          <p>숲, 하늘, 풍경 중심의 몰입형 자연 월드</p>
+          <button onclick="location.href='product2.html'">바로가기</button>
+        </div>
+
+        <div class="product-card" id="card3">
+          <h2>메타버스</h2>
+          <p>미래적이고 디지털한 분위기의 가상 공간</p>
+          <button onclick="location.href='product3.html'">바로가기</button>
+        </div>
+      </div>
+    </section>
+  </div>
+  <footer class="footer" id="contact">
+    <div class="footer-container">
+  
+      <div class="footer-left">
+        <h4>Contact</h4>
+        <p>간단한 문의</p>
+      </div>
+  
+      <form class="footer-form">
+        <input type="text" placeholder="이름">
+        <input type="text" placeholder="문의">
+        <button type="submit">전송</button>
+      </form>
+  
+    </div>
+  </footer>
+
+  <!-- Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/fflate.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+
+  <script>
+    // ==========================================
+    // DEFAULTS & CONFIGURATION
+    // ==========================================
+    const defaults = {
+      terrainSpeed: 12.0,
+      sunIntensity: 4.5,
+      sunHeight: 45,
+      starCount: 18000,
+      starBaseSize: 9.0,
+      twinkleSpeed: 1.5
+    };
+
+    // ==========================================
+    // SCENE SETUP
+    // ==========================================
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.0025);
+
+    const camera = new THREE.PerspectiveCamera(
+      30,
+      window.innerWidth / window.innerHeight,
+      1,
+      2000
+    );
+    camera.position.set(0, 120, 300);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 80, 0);
+    controls.maxPolarAngle = Math.PI / 2 - 0.1;
+    controls.enableDamping = true;
+    controls.update();
+
+    // ==========================================
+    // LIGHTING
+    // ==========================================
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.DirectionalLight(0xfffaf0, defaults.sunIntensity);
+    sunLight.position.set(150, defaults.sunHeight, 70);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 10;
+    sunLight.shadow.camera.far = 600;
+    sunLight.shadow.camera.left = -200;
+    sunLight.shadow.camera.right = 200;
+    sunLight.shadow.camera.top = 200;
+    sunLight.shadow.camera.bottom = -200;
+    sunLight.shadow.bias = -0.0005;
+    scene.add(sunLight);
+
+    // ==========================================
+    // TEXTURE GENERATION
+    // ==========================================
+    function createLunarSandTexture() {
+      const canvas = document.createElement("canvas");
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext("2d");
+
+      ctx.fillStyle = "#888888";
+      ctx.fillRect(0, 0, 512, 512);
+
+      const imageData = ctx.getImageData(0, 0, 512, 512);
+      const data = imageData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const noise = (Math.random() - 0.5) * 85;
+        data[i] += noise;
+        data[i + 1] += noise;
+        data[i + 2] += noise;
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(8, 8);
+      return texture;
+    }
+
+    const sandTexture = createLunarSandTexture();
+
+    // ==========================================
+    // PRODUCT FACE IMAGES
+    // ==========================================
+    const textureLoader = new THREE.TextureLoader();
+
+    const texture1 = textureLoader.load("myface1.jpg");
+    const texture2 = textureLoader.load("myface2.jpg");
+    const texture3 = textureLoader.load("myface3.jpg");
+
+    const material1 = new THREE.MeshBasicMaterial({
+      map: texture1,
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+
+    const material2 = new THREE.MeshBasicMaterial({
+      map: texture2,
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+
+    const material3 = new THREE.MeshBasicMaterial({
+      map: texture3,
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+
+    const faceGroup = new THREE.Group();
+    const faceGeometry = new THREE.CircleGeometry(40, 64);
+
+    const face1 = new THREE.Mesh(faceGeometry, material1);
+    const face2 = new THREE.Mesh(faceGeometry, material2);
+    const face3 = new THREE.Mesh(faceGeometry, material3);
+
+    face1.position.set(-120, 0, 0);
+    face2.position.set(0, 0, 0);
+    face3.position.set(120, 0, 0);
+
+    faceGroup.add(face1);
+    faceGroup.add(face2);
+    faceGroup.add(face3);
+    faceGroup.position.set(0, 120, -220);
+
+    scene.add(faceGroup);
+
+    // ==========================================
+    // TERRAIN
+    // ==========================================
+    function hash(x, z) {
+      let h = x * 12.9898 + z * 78.233;
+      return Math.abs(Math.sin(h) * 43758.5453) % 1;
+    }
+
+    function smoothStep(t) {
+      return t * t * (3 - 2 * t);
+    }
+
+    function getLunarHeight(x, z) {
+      let y = 0;
+      y += Math.sin(x * 0.015) * Math.cos(z * 0.015) * 5.0;
+      y += Math.sin(x * 0.04 + z * 0.03) * 2.0;
+      y += Math.sin(x * 0.15) * Math.sin(z * 0.15) * 0.8;
+      y += Math.sin(x * 0.5) * Math.cos(z * 0.5) * 0.3;
+
+      const cellSize = 85;
+      const cellX = Math.floor(x / cellSize);
+      const cellZ = Math.floor(z / cellSize);
+
+      for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+          const seed = (cellX + i) * 131 + (cellZ + j);
+          const cx = (cellX + i) * cellSize + hash(seed, seed) * cellSize;
+          const cz = (cellZ + j) * cellSize + hash(seed + 1, seed - 1) * cellSize;
+
+          const dx = x - cx;
+          const dz = z - cz;
+          const dist = Math.sqrt(dx * dx + dz * dz);
+
+          const craterRadius = 10 + hash(seed, cellZ) * 20;
+          const craterDepth = craterRadius * 0.5;
+
+          if (dist < craterRadius * 2.0) {
+            const r = dist / craterRadius;
+            if (r < 1.0) {
+              const bowl = Math.cos(r * Math.PI * 0.5);
+              y -= craterDepth * bowl;
+              y += (1.0 - r) * Math.sin(x * 0.9) * 0.4;
+            } else if (r < 1.8) {
+              const rimPeak = 1.25;
+              const rimEnd = 1.8;
+              const rimMaxH = craterDepth * 0.25;
+              if (r < rimPeak) {
+                const t = (r - 1.0) / (rimPeak - 1.0);
+                y += rimMaxH * smoothStep(t);
+              } else {
+                const t = (rimEnd - r) / (rimEnd - rimPeak);
+                y += rimMaxH * smoothStep(t);
+              }
+            }
+          }
+        }
+      }
+      return y;
+    }
+
+    const TERRAIN_SIZE = 400;
+    const SEGMENTS = 180;
+
+    const rockGeo = new THREE.DodecahedronGeometry(1, 1);
+    const rockMat = new THREE.MeshStandardMaterial({
+      color: 0x777777,
+      roughness: 0.9,
+      bumpMap: sandTexture,
+      bumpScale: 0.3
+    });
+
+    function createRockField(parent) {
+      const rocks = new THREE.Group();
+      for (let i = 0; i < 40; i++) {
+        const mesh = new THREE.Mesh(rockGeo, rockMat);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        rocks.add(mesh);
+      }
+      parent.add(rocks);
+      return rocks;
+    }
+
+    function randomizeRocks(rockGroup, segmentZPos, globalZOffset) {
+      rockGroup.children.forEach((rock, i) => {
+        const localX = (hash(i, segmentZPos) - 0.5) * TERRAIN_SIZE * 0.95;
+        const localZ = (hash(i + 55, segmentZPos) - 0.5) * TERRAIN_SIZE * 0.95;
+        const worldZ = segmentZPos + localZ + globalZOffset;
+        const y = getLunarHeight(localX, worldZ);
+
+        rock.position.set(localX, y - 0.35, localZ);
+
+        const s = 0.5 + hash(i + 12, i) * 1.5;
+        rock.scale.set(s, s * (0.6 + Math.random() * 0.4), s);
+        rock.rotation.set(
+          Math.random() * Math.PI,
+          Math.random() * Math.PI,
+          Math.random() * Math.PI
+        );
+      });
+    }
+
+    function updateTerrainGeometry(geometry, zGlobalOffset) {
+      const positions = geometry.attributes.position.array;
+      for (let i = 0; i < positions.length; i += 3) {
+        const x = positions[i];
+        const z = positions[i + 2] + zGlobalOffset;
+        positions[i + 1] = getLunarHeight(x, z);
+      }
+      geometry.attributes.position.needsUpdate = true;
+      geometry.computeVertexNormals();
+    }
+
+    function createTerrainMesh(zInitialPos) {
+      const geometry = new THREE.PlaneGeometry(
+        TERRAIN_SIZE,
+        TERRAIN_SIZE,
+        SEGMENTS,
+        SEGMENTS
+      );
+      geometry.rotateX(-Math.PI / 2);
+      updateTerrainGeometry(geometry, zInitialPos);
+
+      const material = new THREE.MeshStandardMaterial({
+        color: 0x999999,
+        roughness: 0.85,
+        metalness: 0.0,
+        bumpMap: sandTexture,
+        bumpScale: 0.22,
+        roughnessMap: sandTexture
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.receiveShadow = true;
+      mesh.position.z = zInitialPos;
+
+      const rocks = createRockField(mesh);
+      randomizeRocks(rocks, zInitialPos, 0);
+
+      return { mesh, rocks };
+    }
+
+    const t1 = createTerrainMesh(0);
+    const t2 = createTerrainMesh(TERRAIN_SIZE);
+    scene.add(t1.mesh, t2.mesh);
+
+    let globalZOffset = 0;
+
+    // ==========================================
+    // STARS
+    // ==========================================
+    const starGeometry = new THREE.BufferGeometry();
+    const starPositions = [];
+    const starSizes = [];
+    const starPhases = [];
+
+    for (let i = 0; i < defaults.starCount; i++) {
+      const r = 980;
+      const theta = 2 * Math.PI * Math.random();
+      const phi = Math.acos(2 * Math.random() - 1);
+
+      starPositions.push(
+        r * Math.sin(phi) * Math.cos(theta),
+        r * Math.sin(phi) * Math.sin(theta),
+        r * Math.cos(phi)
+      );
+
+      starSizes.push(Math.random() * defaults.starBaseSize + 2.0);
+      starPhases.push(Math.random() * Math.PI * 2);
+    }
+
+    starGeometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(starPositions, 3)
+    );
+    starGeometry.setAttribute(
+      "size",
+      new THREE.Float32BufferAttribute(starSizes, 1)
+    );
+    starGeometry.setAttribute(
+      "phase",
+      new THREE.Float32BufferAttribute(starPhases, 1)
+    );
+
+    const starMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+        twinkleSpeed: { value: defaults.twinkleSpeed }
+      },
+      vertexShader: `
+        attribute float size;
+        attribute float phase;
+        varying float vOpacity;
+        uniform float time;
+        uniform float twinkleSpeed;
+
+        void main() {
+          vOpacity = 0.3 + 0.7 * sin(time * twinkleSpeed + phase);
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = size * (550.0 / -mvPosition.z);
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        varying float vOpacity;
+
+        void main() {
+          float dist = distance(gl_PointCoord, vec2(0.5));
+          if (dist > 0.5) discard;
+          gl_FragColor = vec4(1.0, 1.0, 1.0, vOpacity * (1.0 - dist * 2.0));
+        }
+      `,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    scene.add(new THREE.Points(starGeometry, starMaterial));
+
+    // ==========================================
+    // LOADING
+    // ==========================================
+    const clock = new THREE.Clock();
+    const loadingDiv = document.getElementById("loading");
+    loadingDiv.style.display = "none";
+
+    // ==========================================
+    // GUI
+    // ==========================================
+    const gui = new lil.GUI({ title: "Scene Settings" });
+    gui.close();
+
+    const worldFolder = gui.addFolder("Environment");
+    worldFolder.add(defaults, "terrainSpeed", 0, 100, 1).name("Scroll Speed");
+    worldFolder
+      .add(defaults, "sunIntensity", 0, 15, 0.1)
+      .name("Sun Power")
+      .onChange((v) => {
+        sunLight.intensity = v;
+      });
+    worldFolder.add(defaults, "starBaseSize", 1, 30, 0.5).name("Star Size");
+
+    // ==========================================
+    // ANIMATION
+    // ==========================================
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = Math.min(clock.getDelta(), 0.05);
+      const time = clock.getElapsedTime();
+
+      face1.lookAt(camera.position);
+      face2.lookAt(camera.position);
+      face3.lookAt(camera.position);
+
+      starMaterial.uniforms.time.value = time;
+
+      const moveStep = defaults.terrainSpeed * delta;
+      globalZOffset += moveStep;
+
+      t1.mesh.position.z -= moveStep;
+      t2.mesh.position.z -= moveStep;
+
+      if (t1.mesh.position.z <= -TERRAIN_SIZE) {
+        t1.mesh.position.z += TERRAIN_SIZE * 2;
+        updateTerrainGeometry(t1.mesh.geometry, t1.mesh.position.z + globalZOffset);
+        randomizeRocks(t1.rocks, t1.mesh.position.z, globalZOffset);
+      }
+
+      if (t2.mesh.position.z <= -TERRAIN_SIZE) {
+        t2.mesh.position.z += TERRAIN_SIZE * 2;
+        updateTerrainGeometry(t2.mesh.geometry, t2.mesh.position.z + globalZOffset);
+        randomizeRocks(t2.rocks, t2.mesh.position.z, globalZOffset);
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+  </script>
+</body>
+</html>
