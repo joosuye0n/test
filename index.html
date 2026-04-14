@@ -169,94 +169,133 @@
 
     /* ===== 히어로 ===== */
     .hero {
-      max-width: 1200px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 70px 20px 30px;
+      padding: 70px 20px 20px;
       text-align: center;
     }
 
     .hero h1 {
       margin: 0 0 12px;
-      font-size: 42px;
+      font-size: clamp(32px, 5vw, 48px);
     }
 
     .hero p {
       margin: 0 auto;
-      max-width: 720px;
-      font-size: 17px;
+      max-width: 680px;
+      font-size: 16px;
       line-height: 1.6;
       color: rgba(255,255,255,0.85);
     }
 
     /* ===== 본문 3열 레이아웃 ===== */
     .content-section {
-      max-width: 1200px;
-      margin: 300px 10px;
-      padding: 30px 20px 80px;
-    }
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 20px 100px;
+}
 
-    .product-links {
+.world-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 32px;
+  align-items: start;
+}
 
-  max-width: 1100px;
-  margin: 0 auto;  
+.world-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  position: static;
-  transform: none;
-  z-index: 30;
+.world-image {
+  width: clamp(180px, 18vw, 260px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  background: rgba(255,255,255,0.06);
+}
 
-    }
+.world-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.78;
+}
 
-    .product-card {
-      width: 100%;
-      min-height: 220px;
-      text-align: center;
-      color: white;
-      padding: 28px 20px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
+.product-card {
+  width: 100%;
+  max-width: 320px;
+  min-height: 220px;
+  text-align: center;
+  color: white;
+  padding: 28px 20px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
-    .product-card h2 {
-      margin: 0 0 10px;
-      font-size: 24px;
-    }
+.product-card h2 {
+  margin: 0 0 10px;
+  font-size: 24px;
+}
 
-    .product-card p {
-      margin: 0 0 18px;
-      font-size: 15px;
-      line-height: 1.5;
-      color: rgba(255,255,255,0.85);
-      font-weight: normal;
-    }
+.product-card p {
+  margin: 0 0 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.85);
+}
 
-    .product-card button {
-      padding: 10px 18px;
-      border: none;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.92);
-      color: #111;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+.product-card button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  color: #111;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
 
-    .product-card button:hover {
-      opacity: 0.9;
-    }
+.product-card button:hover {
+  opacity: 0.9;
+}
 
-    @media (max-width: 900px) {
-  .product-links {
+@media (max-width: 900px) {
+  .world-grid {
     grid-template-columns: 1fr;
+  }
+
+  .product-card {
+    max-width: 500px;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer-form {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .footer-form input{
+    min-width: 120px;
+    flex: 1;
   }
 }
 
@@ -387,23 +426,38 @@
     </section>
 
     <section class="content-section" id="worlds">
-      <div class="product-links">
-        <div class="product-card" id="card1">
-          <h2>동숲</h2>
-          <p>아기자기하고 편안한 감성의 힐링형 월드</p>
-          <button onclick="location.href='product1.html'">바로가기</button>
+      <div class="world-grid">
+        <div class="world-item">
+          <div class="world-image">
+            <img src="myface1.jpg" alt="동숲">
+          </div>
+          <div class="product-card">
+            <h2>동숲</h2>
+            <p>아기자기하고 편안한 감성의 힐링형 월드</p>
+            <button onclick="location.href='product1.html'">바로가기</button>
+          </div>
         </div>
-
-        <div class="product-card" id="card2">
-          <h2>자연</h2>
-          <p>숲, 하늘, 풍경 중심의 몰입형 자연 월드</p>
-          <button onclick="location.href='product2.html'">바로가기</button>
+    
+        <div class="world-item">
+          <div class="world-image">
+            <img src="myface2.jpg" alt="자연">
+          </div>
+          <div class="product-card">
+            <h2>자연</h2>
+            <p>숲, 하늘, 풍경 중심의 몰입형 자연 월드</p>
+            <button onclick="location.href='product2.html'">바로가기</button>
+          </div>
         </div>
-
-        <div class="product-card" id="card3">
-          <h2>메타버스</h2>
-          <p>미래적이고 디지털한 분위기의 가상 공간</p>
-          <button onclick="location.href='product3.html'">바로가기</button>
+    
+        <div class="world-item">
+          <div class="world-image">
+            <img src="myface3.jpg" alt="메타버스">
+          </div>
+          <div class="product-card">
+            <h2>메타버스</h2>
+            <p>미래적이고 디지털한 분위기의 가상 공간</p>
+            <button onclick="location.href='product3.html'">바로가기</button>
+          </div>
         </div>
       </div>
     </section>
@@ -527,50 +581,7 @@
 
     const sandTexture = createLunarSandTexture();
 
-    // ==========================================
-    // PRODUCT FACE IMAGES
-    // ==========================================
-    const textureLoader = new THREE.TextureLoader();
-
-    const texture1 = textureLoader.load("myface1.jpg");
-    const texture2 = textureLoader.load("myface2.jpg");
-    const texture3 = textureLoader.load("myface3.jpg");
-
-    const material1 = new THREE.MeshBasicMaterial({
-      map: texture1,
-      transparent: true,
-      side: THREE.DoubleSide
-    });
-
-    const material2 = new THREE.MeshBasicMaterial({
-      map: texture2,
-      transparent: true,
-      side: THREE.DoubleSide
-    });
-
-    const material3 = new THREE.MeshBasicMaterial({
-      map: texture3,
-      transparent: true,
-      side: THREE.DoubleSide
-    });
-
-    const faceGroup = new THREE.Group();
-    const faceGeometry = new THREE.CircleGeometry(40, 64);
-
-    const face1 = new THREE.Mesh(faceGeometry, material1);
-    const face2 = new THREE.Mesh(faceGeometry, material2);
-    const face3 = new THREE.Mesh(faceGeometry, material3);
-
-    face1.position.set(-120, 0, 0);
-    face2.position.set(0, 0, 0);
-    face3.position.set(120, 0, 0);
-
-    faceGroup.add(face1);
-    faceGroup.add(face2);
-    faceGroup.add(face3);
-    faceGroup.position.set(0, 120, -220);
-
-    scene.add(faceGroup);
+ 
 
     // ==========================================
     // TERRAIN
@@ -823,9 +834,7 @@
       const delta = Math.min(clock.getDelta(), 0.05);
       const time = clock.getElapsedTime();
 
-      face1.lookAt(camera.position);
-      face2.lookAt(camera.position);
-      face3.lookAt(camera.position);
+    
 
       starMaterial.uniforms.time.value = time;
 
